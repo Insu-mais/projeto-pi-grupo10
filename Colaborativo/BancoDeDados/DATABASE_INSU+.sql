@@ -1,15 +1,25 @@
 CREATE DATABASE insumais;
 USE insumais;
 
--- Tabela para armazenar dados do cliente que comprará a nossa solução
+-- Tabela para armazenar dados do cliente (empresa) que comprará a nossa solução
 CREATE TABLE cliente(
     id INT PRIMARY KEY AUTO_INCREMENT,
     razaoSocial VARCHAR(100) NOT NULL UNIQUE,
     nmFantasia VARCHAR(100),
-    cnpj CHAR(14) UNIQUE NOT NULL,
-    senha VARCHAR(255) NOT NULL,
+    cnpj CHAR(14) UNIQUE NOT NULL, -- somente números (sem pontos, barra ou traço)
+    -- Padronização: CNPJ precisa ter exatamente 14 dígitos numéricos
+    CONSTRAINT chkCnpj CHECK(cnpj REGEXP '^[0-9]{14}$')
+);
+
+-- Tabela de acesso ao sistema: guarda o email e a senha usados no login (separada de [cliente])
+CREATE TABLE usuario(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    fk_cliente INT NOT NULL, -- Ligação com [cliente]: a qual empresa esse acesso pertence
     email VARCHAR(255) NOT NULL UNIQUE, -- UNIQUE: impede dois cadastros com o mesmo email (usado no login)
-    CONSTRAINT chkEmail CHECK(email LIKE '%@%') -- Confirma se o campo email recebeu um registro válido
+    senha VARCHAR(255) NOT NULL, -- hash da senha (nunca a senha pura)
+    CONSTRAINT fk_usuario_cliente FOREIGN KEY (fk_cliente) REFERENCES cliente(id),
+    -- Padronização: email precisa ter algo antes e depois do @ e um ponto no domínio
+    CONSTRAINT chkEmail CHECK(email LIKE '%_@_%._%')
 );
 
 -- Tabela para armazenar informações relacionadas ao insumo
@@ -17,18 +27,26 @@ CREATE TABLE insumo(
     id INT PRIMARY KEY AUTO_INCREMENT,
     tipo VARCHAR(100) NOT NULL,
     fabricante VARCHAR(255) NOT NULL,
-    custoPorTon DECIMAL(10,2) NOT NULL
+    custoPorTon DECIMAL(10,2) NOT NULL,
+    CONSTRAINT chkCustoPorTon CHECK(custoPorTon > 0)
 );
 
--- Guarda dados do canavial inteiro, como quem é o dono e qual a meta de volume
+-- Guarda dados do canavial inteiro, como quem é o dono, qual a meta de volume e o tamanho da área
 CREATE TABLE canavial(
     id INT PRIMARY KEY AUTO_INCREMENT,
     fk_dono INT NOT NULL, -- Ligação com [cliente]
+    nome VARCHAR(100) NOT NULL, -- Nome para o cliente identificar o canavial (ex.: 'Talhão Norte')
+    areaHa DECIMAL(10,2) NOT NULL, -- Área em hectares
     metaVol INT NOT NULL, -- Toneladas
-    CONSTRAINT fk_canavial_cliente FOREIGN KEY (fk_dono) REFERENCES cliente(id)
+    CONSTRAINT fk_canavial_cliente FOREIGN KEY (fk_dono) REFERENCES cliente(id),
+    CONSTRAINT chkAreaHa CHECK(areaHa > 0),
+    CONSTRAINT chkMetaVol CHECK(metaVol > 0),
+    -- O mesmo cliente não pode ter dois canaviais com o mesmo nome
+    CONSTRAINT uqCanavialNome UNIQUE (fk_dono, nome)
 );
 
 -- Guarda dados de grupos de colmos dentro de um canavial, diz qual insumo está sendo utilizado e quando o grupo foi plantado
+-- (dtColeta é a colheita: NULL = em andamento)
 CREATE TABLE amostra(
     id INT PRIMARY KEY AUTO_INCREMENT,
     fk_canavial INT NOT NULL, -- Ligação com [canavial]
@@ -36,28 +54,33 @@ CREATE TABLE amostra(
     dtCicloInit DATE NOT NULL,
     dtColeta DATE DEFAULT NULL,
     CONSTRAINT fk_amostra_canavial FOREIGN KEY (fk_canavial) REFERENCES canavial(id),
-    CONSTRAINT fk_amostra_insumo FOREIGN KEY (fk_insumo) REFERENCES insumo(id)
+    CONSTRAINT fk_amostra_insumo FOREIGN KEY (fk_insumo) REFERENCES insumo(id),
+    -- A coleta não pode ser antes do início do ciclo
+    CONSTRAINT chkDtColeta CHECK(dtColeta IS NULL OR dtColeta >= dtCicloInit)
 );
 
 -- Tabela para o colmo (cana) individual, a altura é um dado em constante atualização conforme o crescimento do colmo
 CREATE TABLE colmo(
     id INT PRIMARY KEY AUTO_INCREMENT,
     fk_amostra INT NOT NULL, -- Qual grupo ele pertence (ligação com [amostra]). O colmo NÃO muda de amostra
-    altura INT NOT NULL, -- em CM
+    altura INT NOT NULL, -- em CM (leitura ATUAL; as anteriores ficam em [historico])
     dtPlantado DATETIME DEFAULT NULL,
     dtUltimaLeitura DATETIME DEFAULT NOW(),
-    CONSTRAINT fk_colmo_amostra FOREIGN KEY (fk_amostra) REFERENCES amostra(id)
+    CONSTRAINT fk_colmo_amostra FOREIGN KEY (fk_amostra) REFERENCES amostra(id),
+    CONSTRAINT chkAltura CHECK(altura > 0)
 );
 
--- Tabela feita para guardar o status do sensor
+-- Tabela do equipamento (sensor): guarda apenas o status do aparelho.
+-- A altura medida NÃO fica aqui: ela já existe em [colmo].altura (atual) e [historico] (anteriores).
+-- Manter a medição aqui duplicaria o dado (atributo derivado) e poderia ficar divergente.
 CREATE TABLE sensor(
     id INT PRIMARY KEY AUTO_INCREMENT,
-    medicao DECIMAL(6,2) NOT NULL, -- leitura atual do sensor (altura do colmo, em cm)
     dtInstalacao DATETIME DEFAULT NOW(),
-    ativo TINYINT NOT NULL DEFAULT 1,
+    ativo TINYINT NOT NULL DEFAULT 1, -- 1 = ativo, 0 = desativado
     fk_colmo INT NOT NULL, -- Ligação com [colmo]
-    CONSTRAINT fk_sensor_colmo FOREIGN KEY (fk_colmo) REFERENCES colmo(id)
-); -- Adendo: Medição -> 9999.99 cm = 99m MAX
+    CONSTRAINT fk_sensor_colmo FOREIGN KEY (fk_colmo) REFERENCES colmo(id),
+    CONSTRAINT chkAtivo CHECK(ativo IN (0, 1))
+);
 
 -- Funciona como um log: cada vez que o colmo é atualizado, o valor anterior vai para cá (várias linhas por colmo)
 CREATE TABLE historico(
@@ -65,7 +88,8 @@ CREATE TABLE historico(
     fk_colmo INT NOT NULL, -- Ligação com [colmo]
     alturaPast INT NOT NULL, -- em CM
     dtReg DATETIME DEFAULT NOW(), -- Data do registro
-    CONSTRAINT fk_historico_colmo FOREIGN KEY (fk_colmo) REFERENCES colmo(id)
+    CONSTRAINT fk_historico_colmo FOREIGN KEY (fk_colmo) REFERENCES colmo(id),
+    CONSTRAINT chkAlturaPast CHECK(alturaPast > 0)
 );
 
 /*
@@ -73,9 +97,13 @@ CREATE TABLE historico(
 */
 
 -- O hash abaixo é apenas um EXEMPLO de formato bcrypt (60 caracteres). No site real, ele é gerado pelo back-end no cadastro
-INSERT INTO cliente (razaoSocial, nmFantasia, cnpj, senha, email) VALUES
-('Usina Raizen Teste', NULL, '12345678000199', '$2b$10$EXEMPLOdeHashBcryptGeradoNoBackEnd0000000000000000000', 'contato@raizen.com'),
-('Usina Santa Clara Teste', 'Santa Clara', '98765432000110', '$2b$10$EXEMPLOdeHashBcryptGeradoNoBackEnd0000000000000000000', 'contato@santaclara.com.br');
+INSERT INTO cliente (razaoSocial, nmFantasia, cnpj) VALUES
+('Usina Raizen Teste', NULL, '12345678000199'),
+('Usina Santa Clara Teste', 'Santa Clara', '98765432000110');
+
+INSERT INTO usuario (fk_cliente, email, senha) VALUES
+(1, 'contato@raizen.com', '$2b$10$EXEMPLOdeHashBcryptGeradoNoBackEnd0000000000000000000'),
+(2, 'contato@santaclara.com.br', '$2b$10$EXEMPLOdeHashBcryptGeradoNoBackEnd0000000000000000000');
 
 INSERT INTO insumo (tipo, fabricante, custoPorTon) VALUES
 ('Fertilizante nitrogenado', 'Yara', 335.00),
@@ -83,10 +111,10 @@ INSERT INTO insumo (tipo, fabricante, custoPorTon) VALUES
 ('Fertilizante fosfatado', 'Mosaic', 410.50),
 ('Inoculante biológico', 'Biotrop', 280.00); -- ainda não usado em nenhuma amostra
 
-INSERT INTO canavial (fk_dono, metaVol) VALUES
-(1, 5000), -- canavial 1 (Raizen)
-(1, 3200), -- canavial 2 (Raizen)
-(2, 4100); -- canavial 3 (Santa Clara)
+INSERT INTO canavial (fk_dono, nome, areaHa, metaVol) VALUES
+(1, 'Canavial Norte', 120.50, 5000), -- canavial 1 (Raizen)
+(1, 'Canavial Sul', 80.00, 3200),    -- canavial 2 (Raizen)
+(2, 'Canavial Leste', 95.75, 4100);  -- canavial 3 (Santa Clara)
 
 INSERT INTO amostra (fk_canavial, fk_insumo, dtCicloInit, dtColeta) VALUES
 (1, 1, '2026-01-01', NULL),         -- amostra 1: nitrogenado, em andamento
@@ -145,13 +173,48 @@ INSERT INTO colmo (fk_amostra, altura, dtPlantado, dtUltimaLeitura) VALUES
 (5, 305, '2025-02-05', '2025-12-10'),
 (5, 298, '2025-02-05', '2025-12-10');
 
--- Sensores: cada colmo tem um sensor que mede a altura, com a leitura atual
-INSERT INTO sensor (medicao, dtInstalacao, ativo, fk_colmo)
-SELECT altura, dtPlantado, 1, id FROM colmo;
+-- Sensores: cada colmo tem um sensor instalado na data do plantio (a altura fica em [colmo])
+INSERT INTO sensor (dtInstalacao, ativo, fk_colmo)
+SELECT dtPlantado, 1, id FROM colmo;
 
 -- Sensores desativados: o do colmo 3 (defeito) e os do ciclo já colhido (amostra 5)
 UPDATE sensor SET ativo = 0 WHERE fk_colmo = 3;
 UPDATE sensor SET ativo = 0 WHERE fk_colmo IN (17, 18, 19);
+
+/*
+    Testes das restrições (cada INSERT abaixo DEVE FALHAR).
+    Descomente um por vez para verificar se as regras estão funcionando.
+
+    -- CNPJ com pontuação (fora do padrão)
+    INSERT INTO cliente (razaoSocial, cnpj)
+    VALUES ('Teste 1', '12.345.678/0001-99');
+
+    -- CNPJ repetido
+    INSERT INTO cliente (razaoSocial, cnpj)
+    VALUES ('Teste 3', '12345678000199');
+
+    -- Usuário com email inválido
+    INSERT INTO usuario (fk_cliente, email, senha) VALUES (1, 'emailinvalido', 'x');
+
+    -- Usuário com email repetido
+    INSERT INTO usuario (fk_cliente, email, senha) VALUES (1, 'contato@raizen.com', 'x');
+
+    -- Usuário ligado a um cliente que não existe
+    INSERT INTO usuario (fk_cliente, email, senha) VALUES (99, 'novo@teste.com', 'x');
+
+    -- Meta de volume negativa
+    INSERT INTO canavial (fk_dono, nome, areaHa, metaVol) VALUES (1, 'Teste', 10, -5);
+
+    -- Coleta antes do início do ciclo
+    INSERT INTO amostra (fk_canavial, fk_insumo, dtCicloInit, dtColeta)
+    VALUES (1, 1, '2026-05-01', '2026-01-01');
+
+    -- Altura zero
+    INSERT INTO colmo (fk_amostra, altura) VALUES (1, 0);
+
+    -- Sensor com status inválido
+    INSERT INTO sensor (ativo, fk_colmo) VALUES (5, 1);
+*/
 
 /*
     Selects de demonstração.
@@ -196,6 +259,8 @@ ORDER BY c.id;
 SELECT
     cli.razaoSocial AS 'Cliente',
     can.id AS 'Canavial',
+    can.nome AS 'Nome do canavial',
+    can.areaHa AS 'Área (ha)',
     can.metaVol AS 'Meta de Toneladas',
     CONCAT(i.tipo, ' do ', i.fabricante) AS 'Info. do Insumo',
     a.dtCicloInit AS 'Inicio do ciclo',
@@ -261,10 +326,11 @@ FROM sensor s
 WHERE s.ativo = 0
   AND a.dtColeta IS NULL; -- ignora os sensores desligados de propósito após a colheita
 
--- Consulta 8: Resumo por cliente (quantos canaviais, meta total e colmos monitorados)
+-- Consulta 8: Resumo por cliente (quantos canaviais, meta total, área total e colmos monitorados)
 SELECT
     cli.razaoSocial AS 'Cliente',
     COUNT(can.id) AS 'Qtd. de canaviais',
+    IFNULL(SUM(can.areaHa), 0) AS 'Área total (ha)',
     IFNULL(SUM(can.metaVol), 0) AS 'Soma das metas (ton)',
     -- Subselect separado para contar os colmos, assim os JOINs não repetem a meta de cada canavial
     (SELECT COUNT(*)
@@ -290,10 +356,13 @@ FROM insumo i
         ON a.fk_insumo = i.id
 WHERE a.id IS NULL;
 
--- Consulta 10: Login do site. O back-end busca o cliente pelo email e compara o hash da senha digitada com o hash salvo
+-- Consulta 10: Login do site. O back-end busca o usuário pelo email e compara o hash da senha digitada com o hash salvo
 SELECT
-    id,
-    razaoSocial,
-    senha AS 'Hash salvo (comparado no back-end)'
-FROM cliente
-WHERE email = 'contato@raizen.com';
+    u.id AS 'Usuário',
+    cli.id AS 'Cliente',
+    cli.razaoSocial AS 'Razão social',
+    u.senha AS 'Hash salvo (comparado no back-end)'
+FROM usuario u
+    JOIN cliente cli
+        ON u.fk_cliente = cli.id
+WHERE u.email = 'contato@raizen.com';

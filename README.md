@@ -23,7 +23,7 @@ projeto-pi-grupo10
           ├───Davi Almeida
           ├───Gabriel Silva
           ├───Gabriella Vitoria
-          ├───Julio Cézar
+          ├───Julio Lino
           ├───Leonardo Fogaça
 ```
 

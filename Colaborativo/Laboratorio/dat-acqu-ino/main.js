@@ -3,28 +3,28 @@ const serialport = require('serialport');
 const express = require('express');
 const mysql = require('mysql2');
 const path = require('path');
+const { exec } = require('child_process');
 
 // constantes para configurações
 const SERIAL_BAUD_RATE = 9600;
 const SERVIDOR_PORTA = 3300;
 
 // habilita ou desabilita a inserção de dados no banco de dados
-const HABILITAR_OPERACAO_INSERIR = false;
+const HABILITAR_OPERACAO_INSERIR = true;
 
 // função para comunicação serial
 const serial = async (
-    valoresSensorAnalogico,
-    valoresSensorDistancia,
+    valoresHCSR04
 ) => {
 
     // conexão com o banco de dados MySQL
     let poolBancoDados = mysql.createPool(
         {
             host: 'localhost',
-            user: 'insu++',
+            user: 'Insu',
             password: 'Insu100#',
-            database: 'sensor',
-            port: 3306
+            database: 'insumais',
+            port: 3307
         }
     ).promise();
 
@@ -53,19 +53,15 @@ const serial = async (
         console.log(data);
         const valores = data.split(';');
         const distancia = parseInt(valores[0]);
-        const sensorAnalogico = valores[1] != null && valores[1] !== '' ? parseFloat(valores[1]) : null;
 
         // armazena os valores dos sensores nos arrays correspondentes
-        if (sensorAnalogico !== null && valoresSensorAnalogico) {
-            valoresSensorAnalogico.push(sensorAnalogico);
-        }
-        valoresSensorDistancia.push(distancia);
+        valoresHCSR04.push(distancia);
 
         // insere os dados no banco de dados (se habilitado)
         if (HABILITAR_OPERACAO_INSERIR) {
             // este insert irá inserir o valor de distancia na tabela "val_sensor"
             await poolBancoDados.execute(
-                'INSERT INTO val_sensor (distancia) VALUES (?)',
+                'INSERT INTO sensor (medicao) VALUES (?)',
                 [distancia]
             );
             console.log("valores inseridos no banco: ", +distancia);
@@ -81,8 +77,7 @@ const serial = async (
 
 // função para criar e configurar o servidor web
 const servidor = (
-    valoresSensorAnalogico,
-    valoresSensorDistancia
+    valoresHCSR04
 ) => {
     const app = express();
 
@@ -96,40 +91,64 @@ const servidor = (
         next();
     });
 
-    // rota raiz serve indexv2.html
+    // rota raiz serve index.html (indexv2.html não existe no projeto)
     app.get('/', (_, res) => {
-        res.sendFile(path.join(__dirname, 'indexv2.html'));
+        res.sendFile(path.join(__dirname, 'index.html'));
     });
 
-    // inicia o servidor na porta especificada
-    app.listen(SERVIDOR_PORTA, () => {
+    // inicia o servidor na porta especificada e trata erros comuns (ex: EADDRINUSE)
+    const serverInstance = app.listen(SERVIDOR_PORTA, () => {
         console.log(`API executada com sucesso na porta ${SERVIDOR_PORTA}`);
+
+        // tenta abrir o navegador padrão na raiz da aplicação
+        const url = `http://localhost:${SERVIDOR_PORTA}`;
+        (function openBrowser(u) {
+            const platform = process.platform;
+            let cmd;
+            if (platform === 'win32') cmd = `start "" "${u}"`;
+            else if (platform === 'darwin') cmd = `open "${u}"`;
+            else cmd = `xdg-open "${u}"`;
+
+            exec(cmd, (error) => {
+                if (error) {
+                    // não falha a aplicação se não conseguir abrir o navegador
+                    console.warn('Não foi possível abrir o navegador automaticamente:', error.message || error);
+                }
+            });
+        })(url);
+    });
+
+    serverInstance.on('error', (err) => {
+        if (err && err.code === 'EADDRINUSE') {
+            console.error(`Porta ${SERVIDOR_PORTA} já está em uso. Finalize o processo que a está usando ou altere a porta.`);
+            // encerra com código de erro para sinalizar o problema
+            process.exit(1);
+        }
+        console.error('Erro no servidor:', err);
     });
 
     // define os endpoints da API para cada tipo de sensor
-    app.get('/sensores/analogico', (_, response) => {
-        return response.json(valoresSensorAnalogico);
-    });
     app.get('/sensores/digital', (_, response) => {
-        return response.json(valoresSensorDistancia);
+        return response.json(valoresHCSR04);
     });
 }
 
 // função principal assíncrona para iniciar a comunicação serial e o servidor web
-(async () => {
+// função principal assíncrona para iniciar a aplicação
+(() => {
     // arrays para armazenar os valores dos sensores
-    const valoresSensorAnalogico = [];
-    const valoresSensorDistancia = [];
+    const valoresHCSR04 = [];
 
-    // inicia a comunicação serial
-    await serial(
-        valoresSensorAnalogico,
-        valoresSensorDistancia
-    );
-
-    // inicia o servidor web
+    // inicia o servidor web primeiro para garantir que a UI carregue
     servidor(
-        valoresSensorAnalogico,
-        valoresSensorDistancia
+        valoresHCSR04
     );
+
+    // inicia a comunicação serial em background. Se ocorrer erro
+    // na inicialização da serial, logamos e deixamos a API funcionando
+    serial(
+        valoresHCSR04
+    ).catch((err) => {
+        console.error('Erro ao inicializar serial:', err && err.message ? err.message : err);
+    });
 })();

@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./dash-base.css">
+    <link rel="stylesheet" href="./dash-demonstracao.css">
     <title>Demonstração</title>
-    <link rel="stylesheet" href="./../css/dash-demonstracao.css">
-    <link rel="shortcut icon" href="imagens/logo-insu-escuro.png" type="image/x-icon">
+    <link rel="shortcut icon" href="./assets/logo-insu-escuro.svg" type="image/x-icon">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
@@ -21,7 +22,7 @@
                 </div>
 
                 <div class="user-header">
-                    <img src="./../assets/user-conta.png" alt="User conta">
+                    <img src="./assets/user-conta.svg" alt="User conta">
                     <div class="nome-user-header">
                         <h3>User</h3>
                         <p>Fazenda Boa Vista</p>
@@ -32,7 +33,7 @@
             <main class="main">
 
                 <h1>Demonstração</h1>
-                <p>Acompanhe a demonstração da API dat-acqui-no em funcionamento</p>
+                <p>Acompanhe dados ilustrativos de crescimento no período.</p>
 
                 <div class="posicao-container-grafico">
                     <div class="container-grafico">
@@ -42,8 +43,6 @@
                 
             </main>
         </div>
-</body>
-
 <script>
 
     const ctx = document.getElementById('myChart');
@@ -53,7 +52,8 @@
         'Fevereiro',
         'Março',
         'Abril',
-        'Maio'
+        'Maio',
+        'Junho'
     ];
 
     const data = {
@@ -75,5 +75,5 @@
     new Chart(ctx, config);
 
 </script>
-
+</body>
 </html>

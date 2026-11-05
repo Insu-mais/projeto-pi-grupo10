@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./dash-base.css">
+    <link rel="stylesheet" href="./dash-detalhes.css">
     <title>Detalhes do insumo</title>
-    <link rel="stylesheet" href="./../css/dash-detalhes.css">
-    <link rel="stylesheet" href="./../css/dash-demonstracao.css">
-    <link rel="shortcut icon" href="./../assets/logo-insu-escuro.png" type="image/x-icon">
+    <link rel="shortcut icon" href="./assets/logo-insu-escuro.svg" type="image/x-icon">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 </head>
 
@@ -15,27 +15,27 @@
     <div class="posicao-side-bar-e-header">
 
         <aside class="side-bar">
-            <img src="./../assets/logo-insu-claro.png" alt="Insu+ LOGO">
+            <img src="./assets/logo-insu-claro.svg" alt="Insu+ LOGO">
 
             <div class="posicao-side-bar">
 
                 <div class="row-side-bar">
-                    <img src="./../assets/icone-home.png" alt="">
+                    <img src="./assets/icone-home.svg" alt="">
                     <a href="dash-home.html">VISÃO GERAL</a>
                 </div>
 
                 <div class="row-side-bar selecionado">
-                    <img src="./../assets/icone-cana-de-acucar.png" alt="">
+                    <img src="./assets/icone-cana-de-acucar.svg" alt="">
                     <a href="dash-insumos.html">INSUMOS</a>
                 </div>
 
                 <!-- <div class="row-side-bar">
-                    <img src="./../assets/icone-configuracao.png" alt="">
+                    <img src="./assets/icone-configuracao.svg" alt="">
                     <a href="">CONFIGURAÇÃO</a>
                 </div> -->
 
                 <div class="row-side-bar">
-                    <img src="./../assets/icone-sair.png" alt="">
+                    <img src="./assets/icone-sair.svg" alt="">
                     <a href="./../../index.html">SAIR</a>
                 </div>
 
@@ -51,7 +51,7 @@
                 </div>
 
                 <div class="user-header">
-                    <img src="./../assets/user-conta.png" alt="User conta">
+                    <img src="./assets/user-conta.svg" alt="User conta">
                     <div class="nome-user-header">
                         <h3>User</h3>
                         <p>Fazenda Boa Vista</p>
@@ -64,11 +64,18 @@
                 <h1 id="titulo">Detalhes</h1>
                 <p><a href="dash-insumos.html">← Voltar para a visão geral dos insumos</a></p>
 
+                <div class="abas-graficos" role="tablist" aria-label="Selecionar gráfico">
+                    <button type="button" class="aba-grafico" role="tab" aria-selected="true" data-abrir="crescimento" onclick="mostrarGrafico(this)">Crescimento</button>
+                    <button type="button" class="aba-grafico" role="tab" aria-selected="false" data-abrir="retorno" onclick="mostrarGrafico(this)">Custo e retorno</button>
+                    <button type="button" class="aba-grafico" role="tab" aria-selected="false" data-abrir="aplicacao" onclick="mostrarGrafico(this)">Aplicacoes</button>
+                </div>
+
                 <div class="posicao-container-grafico">
 
                     <div class="coluna">
-                        <div class="container-grafico alto">
-                            <h3>Crescimento do colmo ao longo dos meses</h3>
+                        <div class="container-grafico alto painel-ativo" data-grafico="crescimento">
+                            <h3>Como a altura evoluiu com o Insumo C?</h3>
+                            <p class="subtitulo-grafico">Comparação mensal com o grupo de controle · altura em metros</p>
                             <div class="area-grafico">
                                 <canvas id="graficoCrescimento"></canvas>
                             </div>
@@ -77,23 +84,25 @@
 
                     <div class="coluna">
 
-                        <div class="container-donut">
+                        <div class="container-donut " data-grafico="retorno">
                             <div class="donut-wrapper">
                                 <canvas id="graficoDonut"></canvas>
                             </div>
                             <div class="donut-info">
-                                <p class="p-black">O insumo compensa?</p>
+                                <p class="p-black">Como custo e retorno hipotético se comparam?</p>
                                 <span class="donut-status" id="donutStatus">-</span>
                                 <p id="donutTexto"></p>
                                 <div class="legenda-donut">
                                     <span><i style="background:#16271d"></i>Custo</span>
                                     <span><i style="background:#07F9A2"></i>Retorno</span>
                                 </div>
+                                <p class="aviso-simulacao">Exemplo ilustrativo: retorno calculado a R$ 1.000 por metro adicional; não equivale a lucro real.</p>
                             </div>
                         </div>
 
-                        <div class="container-grafico medio">
-                            <h3>Aplicação mensal (kg)</h3>
+                        <div class="container-grafico medio " data-grafico="aplicacao">
+                            <h3>Quanto insumo foi aplicado em cada mês?</h3>
+                            <p class="subtitulo-grafico">Quantidade de produto em kg · dados simulados</p>
                             <div class="area-grafico">
                                 <canvas id="graficoAplicacao"></canvas>
                             </div>
@@ -199,13 +208,13 @@
             });
 
             if (lucro >= 0) {
-                status.textContent = 'Compensa';
+                status.textContent = 'Saldo hipotético positivo';
                 status.className = 'donut-status compensa';
-                texto.textContent = `${cadastro.fertilizante}: lucro estimado de ${reais(lucro)}`;
+                texto.textContent = `${cadastro.fertilizante}: saldo estimado de ${reais(lucro)}`;
             } else {
-                status.textContent = 'Não compensa';
+                status.textContent = 'Saldo hipotético negativo';
                 status.className = 'donut-status nao-compensa';
-                texto.textContent = `${cadastro.fertilizante}: prejuízo estimado de ${reais(Math.abs(lucro))}`;
+                texto.textContent = `${cadastro.fertilizante}: saldo negativo de ${reais(Math.abs(lucro))}`;
             }
         }
 
@@ -270,6 +279,7 @@
             }
         });
     </script>
+    <script src="./dash-telas.js"></script>
 </body>
 
 </html>

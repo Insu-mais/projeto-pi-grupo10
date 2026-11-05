@@ -88,134 +88,140 @@
 
                     <div class="container-kpi">
                         <div class="row-kpi">
-                            <img src="./assets/lucro.svg" alt="">
-                            <h4>Lucro líquido estimado</h4>
+                            <img src="./assets/insumo.svg" alt="">
+                            <h4>Diferença entre os insumos</h4>
                         </div>
-                        <span class="kpi-indisponivel">Não calculado</span>
-                        <p>Necessários dados de produção e custos</p>
+
+                        <span id="kpi-diferenca">—</span>
+                        <p id="kpi-diferenca-descricao"></p>
                     </div>
 
                     <div class="container-kpi">
                         <div class="row-kpi">
-                            <img src="./assets/produtividade.svg" alt="">
-                            <h4>Produtividade estimada</h4>
+                            <img src="./assets/crescimento.svg" alt="">
+                            <h4>Pico de crescimento</h4>
                         </div>
-                        <span class="kpi-indisponivel">Sem estimativa</span>
-                        <p>Necessários dados de produção em t/ha</p>
-                    </div>
-                </div>
 
-                <div class="abas-graficos" role="tablist" aria-label="Selecionar gráfico">
-                    <button type="button" class="aba-grafico" role="tab" aria-selected="true" data-abrir="evolucao" onclick="mostrarGrafico(this)">Evolucao</button>
-                    <button type="button" class="aba-grafico" role="tab" aria-selected="false" data-abrir="comparacao" onclick="mostrarGrafico(this)">Comparacao</button>
-                </div>
-
-                <div class="posicao-container-grafico">
-                    <div class="container-grafico painel-ativo" data-grafico="evolucao">
-                        <h3>Como a altura da cana evoluiu ao longo dos meses?</h3>
-                        <p class="subtitulo-grafico">Altura média de janeiro a junho (cm) · dados simulados</p>
-                        <div class="area-grafico"><canvas id="grafico-produtividade" aria-label="Evolução mensal da altura por tratamento"></canvas></div>
-                        <p class="conclusao-grafico">O Insumo A encerrou junho com a maior altura: 142 cm.</p>
+                        <span id="kpi-pico">—</span>
+                        <p id="kpi-pico-descricao"></p>
                     </div>
 
-                    <div class="container-grafico" data-grafico="comparacao">
-                        <h3>Qual tratamento apresentou maior altura final?</h3>
-                        <p class="subtitulo-grafico">Altura média em junho (cm) · dados simulados</p>
-                        <div class="area-grafico"><canvas id="grafico-colmo" aria-label="Altura final em centímetros por tratamento"></canvas></div>
-                        <p class="conclusao-grafico">Insumo A: 28,4 cm a mais que o controle (+25%).</p>
+                    <div class="abas-graficos" role="tablist" aria-label="Selecionar gráfico">
+                        <button type="button" class="aba-grafico" role="tab" aria-selected="true" data-abrir="evolucao"
+                            onclick="mostrarGrafico(this)">Evolucao</button>
+                        <button type="button" class="aba-grafico" role="tab" aria-selected="false"
+                            data-abrir="comparacao" onclick="mostrarGrafico(this)">Comparacao</button>
                     </div>
-                </div>
+
+                    <div class="posicao-container-grafico">
+                        <div class="container-grafico painel-ativo" data-grafico="evolucao">
+                            <h3>Como a altura da cana evoluiu ao longo dos meses?</h3>
+                            <p class="subtitulo-grafico">Altura média de janeiro a junho (cm) · dados simulados</p>
+                            <div class="area-grafico"><canvas id="grafico-produtividade"
+                                    aria-label="Evolução mensal da altura por tratamento"></canvas></div>
+                            <p class="conclusao-grafico">O Insumo A encerrou junho com a maior altura: 142 cm.</p>
+                        </div>
+
+                        <div class="container-grafico" data-grafico="comparacao">
+                            <h3>Qual tratamento apresentou maior altura final?</h3>
+                            <p class="subtitulo-grafico">Altura média em junho (cm) · dados simulados</p>
+                            <div class="area-grafico"><canvas id="grafico-colmo"
+                                    aria-label="Altura final em centímetros por tratamento"></canvas></div>
+                            <p class="conclusao-grafico">Insumo A: 28,4 cm a mais que o controle (+25%).</p>
+                        </div>
+                    </div>
 
             </main>
         </div>
     </div>
 
-<script>
+    <script>
 
-    const ctx = document.getElementById('grafico-colmo');
+        const ctx = document.getElementById('grafico-colmo');
 
-    const labels = ['Controle', 'Insumo A', 'Insumo B', 'Insumo C'];
-    const data = {
-        labels: labels,
-        datasets: [{
-            label: 'Altura média em junho',
-            data: [113.6, 142, 125, 130],
-            backgroundColor: ['#084925', '#07F9A2', '#56B788', '#9DDCBF'],
-            borderWidth: 0
-        }]
-    };
+        const labels = ['Controle', 'Insumo A', 'Insumo B', 'Insumo C'];
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: 'Altura média em junho',
+                data: [113.6, 142, 125, 130],
+                backgroundColor: ['#084925', '#07F9A2', '#56B788', '#9DDCBF'],
+                borderWidth: 0
+            }]
+        };
 
-    const config = {
-        type: 'bar',
-        data: data,
-        options: {
-            maintainAspectRatio: false,
-            plugins: { tooltip: { callbacks: { label: function(item) { return item.dataset.label + ': ' + item.parsed.y + ' cm'; } } } },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: { display: true, text: 'Altura (cm)' }
+        const config = {
+            type: 'bar',
+            data: data,
+            options: {
+                maintainAspectRatio: false,
+                plugins: {tooltip: {callbacks: {label: function (item) {return item.dataset.label + ': ' + item.parsed.y + ' cm';}}}},
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {display: true, text: 'Altura (cm)'}
+                    }
                 }
             }
-        }
-    };
+        };
 
-    new Chart(ctx, config);
+        new Chart(ctx, config);
 
-    const ctx2 = document.getElementById('grafico-produtividade');
+        const ctx2 = document.getElementById('grafico-produtividade');
 
-    const labels2 = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'];
-    const data2 = {
-        labels: labels2,
-        datasets: [
-            {
-                label: 'Sem insumo (controle)',
-                data: [12, 30, 51, 76, 99, 113.6],
-                fill: false,
-                borderColor: '#084925',
-                tension: 0.1
-            },
-            {
-                label: 'Insumo A',
-                data: [12, 35, 62, 92, 119, 142],
-                fill: false,
-                borderColor: '#07B875',
-                tension: 0.1
-            },
-            {
-                label: 'Insumo B',
-                data: [12, 32, 56, 82, 105, 125],
-                fill: false,
-                borderColor: '#56B788',
-                tension: 0.1
-            },
-            {
-                label: 'Insumo C',
-                data: [12, 33, 59, 86, 109, 130],
-                fill: false,
-                borderColor: '#9DDCBF',
-                tension: 0.1
-            }
-        ]
-    };
+        const labels2 = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'];
+        const data2 = {
+            labels: labels2,
+            datasets: [
+                {
+                    label: 'Sem insumo (controle)',
+                    data: [12, 30, 51, 76, 99, 113.6],
+                    fill: false,
+                    borderColor: '#084925',
+                    tension: 0.1
+                },
+                {
+                    label: 'Insumo A',
+                    data: [12, 35, 62, 92, 119, 142],
+                    fill: false,
+                    borderColor: '#07B875',
+                    tension: 0.1
+                },
+                {
+                    label: 'Insumo B',
+                    data: [12, 32, 56, 82, 105, 125],
+                    fill: false,
+                    borderColor: '#56B788',
+                    tension: 0.1
+                },
+                {
+                    label: 'Insumo C',
+                    data: [12, 33, 59, 86, 109, 130],
+                    fill: false,
+                    borderColor: '#9DDCBF',
+                    tension: 0.1
+                }
+            ]
+        };
 
-    const config2 = {
-        type: 'line',
-        data: data2,
-        options: {
-            maintainAspectRatio: false,
-            plugins: { tooltip: { callbacks: { label: function(item) { return item.dataset.label + ': ' + item.parsed.y + ' cm'; } } } },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: { display: true, text: 'Altura (cm)' }
+        const config2 = {
+            type: 'line',
+            data: data2,
+            options: {
+                maintainAspectRatio: false,
+                plugins: {tooltip: {callbacks: {label: function (item) {return item.dataset.label + ': ' + item.parsed.y + ' cm';}}}},
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {display: true, text: 'Altura (cm)'}
+                    }
                 }
             }
-        }
-    };
+        };
 
-    new Chart(ctx2, config2);
-</script>
+        new Chart(ctx2, config2);
+    </script>
     <script src="./dash-telas.js"></script>
 </body>
+
 </html>

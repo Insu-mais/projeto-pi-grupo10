@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* Dashboard responsiva em uma unica tela, sem rolagem da pagina. */
+* { box-sizing: border-box; }
+html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; }
+body { font-family: 'Inter', Arial, sans-serif; color: #16271d; background: #fff; }
+.posicao-side-bar-e-header { display: flex; height: 100vh; height: 100dvh; width: 100%; overflow: hidden; }
+.side-bar { width: clamp(185px, 17vw, 235px); min-width: 0; flex-shrink: 0; min-height: 0; height: 100%; padding: clamp(16px,3vh,28px) 14px; background: #16271d; display: flex; flex-direction: column; align-items: center; gap: clamp(22px,6vh,52px); }
+.side-bar > img { width: 130px; max-height: 57px; object-fit: contain; }
+.posicao-side-bar { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+.row-side-bar { display: flex; align-items: center; gap: 12px; min-height: 42px; border-radius: 8px; border-left: 4px solid transparent; padding: 7px 10px; }
+.row-side-bar img { width: 22px; height: 22px; object-fit: contain; }
+.row-side-bar a { color: white; text-decoration: none; font-size: 12px; font-weight: 600; }
+.row-side-bar a:hover { color: #07F9A2; }
+.row-side-bar.selecionado { background: rgba(7,249,162,.10); border-left-color: #07F9A2; }
+.row-side-bar.selecionado a { color: #07F9A2; }
+.posicao-header-main { min-width: 0; min-height: 0; flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.header { height: clamp(65px, 10vh, 90px); flex-shrink: 0; width: 100%; padding: 10px clamp(14px,2.2vw,30px); background: #eef6f1; display: flex; justify-content: space-between; align-items: center; gap: 14px; }
+.header h2 { margin: 0 0 3px; font-size: clamp(16px,1.6vw,21px); }
+.header p { margin: 0; color: #617469; font-size: clamp(10px,.96vw,13px); }
+.user-header { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
+.user-header > img { width: 42px; height: 42px; object-fit: contain; }
+.nome-user-header h3 { margin: 0 0 3px; font-size: 13px; }
+.nome-user-header p { font-size: 11px; }
+.main { flex: 1; min-height: 0; width: 100%; max-width: 1650px; margin: 0 auto; padding: clamp(12px,2vh,24px) clamp(12px,2vw,30px) clamp(10px,2vh,22px); display: flex; flex-direction: column; overflow: hidden; }
+.main h1 { margin: 0 0 5px; font-size: clamp(20px,1.8vw,26px); line-height: 1.22; flex-shrink: 0; }
+.main > p { margin: 0; font-size: clamp(11px,1vw,13px); color: #66786f; line-height: 1.45; flex-shrink: 0; }
+.main a { color: #13754d; }
+.main a:hover { color: #064b30; }
+.container-kpi, .container-grafico, .container-donut { background: #eef6f1; border-radius: 15px; }
+.subtitulo-grafico { color: #64766b; font-size: clamp(10px,.86vw,12px); line-height: 1.35; margin: 0 0 5px; flex-shrink: 0; }
+.conclusao-grafico { color: #196344; font-weight: 600; font-size: clamp(10px,.9vw,12px); line-height: 1.35; margin: 7px 0 0; flex-shrink: 0; }
+.area-grafico { position: relative; flex: 1; min-width: 0; min-height: 0; width: 100%; overflow: hidden; }
+.area-grafico canvas { display: block; width: 100% !important; height: 100% !important; }
+/* Abas visiveis apenas quando o espaco nao comporta todos os graficos. */
+.abas-graficos { display: none; flex-shrink: 0; align-items: center; gap: 6px; margin: 9px 0 8px; }
+.aba-grafico { border: 1px solid #b5d9c6; border-radius: 9px; background: #f2faf5; color: #23523b; font: 600 12px 'Inter', Arial, sans-serif; padding: 8px 12px; cursor: pointer; white-space: nowrap; }
+.aba-grafico[aria-selected='true'] { background: #167c52; color: #fff; border-color: #167c52; }
+.aba-grafico:focus-visible { outline: 3px solid #07b875; outline-offset: 2px; }
+
+@media (max-width: 1050px), (max-height: 660px) {
+  .abas-graficos { display: flex; }
+  .posicao-container-grafico .container-grafico { display: none; }
+  .posicao-container-grafico .container-grafico.painel-ativo { display: flex; }
+  .posicao-container-grafico .container-donut { display: none; }
+  .posicao-container-grafico .container-donut.painel-ativo { display: flex; }
+}
+
+@media (max-width: 900px) {
+  .posicao-side-bar-e-header { flex-direction: column; }
+  .side-bar { width: 100%; height: 55px; min-height: 55px; flex-direction: row; justify-content: space-between; gap: 12px; padding: 6px 14px; }
+  .side-bar > img { width: 80px; max-height: 39px; }
+  .posicao-side-bar { width: auto; flex-direction: row; align-items: center; gap: 5px; }
+  .row-side-bar { min-height: 35px; gap: 6px; padding: 6px 8px; }
+  .row-side-bar img { width: 17px; height: 17px; }
+  .row-side-bar a { font-size: 10px; }
+  .header { height: 62px; }
+  .main { padding: 12px 14px; }
+}
+@media (max-width: 560px) {
+  .side-bar { height: 47px; min-height: 47px; padding: 5px 9px; gap: 4px; }
+  .side-bar > img { width: 60px; max-height: 32px; }
+  .posicao-side-bar { gap: 2px; }
+  .row-side-bar { min-height: 31px; padding: 4px 6px; border-left-width: 2px; }
+  .row-side-bar img { display: none; }
+  .row-side-bar a { font-size: 9px; }
+  .header { height: 53px; padding: 7px 12px; }
+  .header h2 { font-size: 15px; }
+  .header p { font-size: 10px; }
+  .user-header { gap: 5px; }
+  .user-header > img { width: 31px; height: 31px; }
+  .nome-user-header h3 { font-size: 10px; }
+  .nome-user-header p { font-size: 9px; }
+  .main { padding: 9px 10px 10px; }
+  .main h1 { font-size: 18px; margin-bottom: 3px; }
+  .main > p { font-size: 10px; }
+  .aba-grafico { font-size: 10px; padding: 7px 9px; }
+  .abas-graficos { gap: 5px; margin: 7px 0; }
+}
+@media (max-height: 620px) {
+  .header { height: 55px; }
+  .main { padding-top: 7px; padding-bottom: 7px; }
+  .main h1 { font-size: 18px; margin-bottom: 2px; }
+  .main > p { font-size: 10px; }
+  .abas-graficos { margin: 5px 0; }
+}

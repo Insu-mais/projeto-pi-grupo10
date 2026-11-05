@@ -1,57 +1,72 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insu+ | Visão geral</title>
     <link rel="stylesheet" href="../css/dash-base.css">
     <link rel="stylesheet" href="../css/dash-home.css">
-    <title>Insu+ | Visão geral</title>
     <link rel="shortcut icon" href="../assets/logo-insu-escuro.png" type="image/png">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-    <script src="./dash-graficos-fallback.js"></script>
-</head>
 
+    <style>
+        /* Correção do posicionamento dos dois gráficos, sem substituir o CSS do projeto. */
+        .posicao-container-grafico {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            width: 100%;
+            min-width: 0;
+        }
+        .posicao-container-grafico .container-grafico {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+        .posicao-container-grafico .area-grafico {
+            width: 100%;
+            min-width: 0;
+            flex: 1;
+        }
+        .posicao-container-grafico svg {
+            display: block;
+            width: 100%;
+            height: auto;
+            max-height: 33vh;
+        }
+        @media (max-width: 850px) {
+            .posicao-container-grafico { grid-template-columns: 1fr; }
+            .posicao-container-grafico .container-grafico { display: none; }
+            .posicao-container-grafico .container-grafico.painel-ativo { display: flex; }
+            .posicao-container-grafico svg { max-height: none; }
+        }
+    </style>
+</head>
 <body>
     <div class="posicao-side-bar-e-header">
-
         <aside class="side-bar">
             <img src="../assets/logo-insu-claro.png" alt="Insu+ LOGO">
-
             <div class="posicao-side-bar">
-
                 <div class="row-side-bar selecionado">
                     <img src="../assets/icone-home.png" alt="">
-                    <a href="">VISÃO GERAL</a>
+                    <a href="dash-home.html">VISÃO GERAL</a>
                 </div>
-
                 <div class="row-side-bar">
                     <img src="../assets/icone-cana-de-acucar.png" alt="">
                     <a href="dash-insumos.html">INSUMOS</a>
                 </div>
-
-                <!-- <div class="row-side-bar">
-                    <img src="../assets/icone-configuracao.png" alt="">
-                    <a href="">CONFIGURAÇÃO</a>
-                </div> -->
-
                 <div class="row-side-bar">
                     <img src="../assets/icone-sair.png" alt="">
-                    <a href="./../../index.html">SAIR</a>
+                    <a href="../../index.html">SAIR</a>
                 </div>
-
             </div>
         </aside>
 
         <div class="posicao-header-main">
-
             <header class="header">
-
                 <div class="ola-header">
                     <h2>Olá, User!</h2>
                     <p>Aqui está um resumo do seu canavial.</p>
                 </div>
-
                 <div class="user-header">
                     <img src="../assets/user-conta.png" alt="User conta">
                     <div class="nome-user-header">
@@ -59,16 +74,13 @@
                         <p>Fazenda Boa Vista</p>
                     </div>
                 </div>
-
             </header>
 
             <main class="main">
-
                 <h1>Visão geral do canavial</h1>
                 <p>Compare a altura da cana em diferentes tratamentos. Dados demonstrativos.</p>
 
                 <div class="posicao-container-kpi">
-
                     <div class="container-kpi">
                         <div class="row-kpi">
                             <img src="../assets/crescimento.png" alt="">
@@ -77,7 +89,6 @@
                         <span>Insumo A</span>
                         <p>25% acima do grupo de controle</p>
                     </div>
-
                     <div class="container-kpi">
                         <div class="row-kpi">
                             <img src="../assets/insumo.png" alt="">
@@ -86,173 +97,151 @@
                         <span>+28,4 cm</span>
                         <p>142 cm com Insumo A vs. 113,6 cm sem insumo (+25%)</p>
                     </div>
-
-<div class="container-kpi">
-    <div class="row-kpi">
-        <img src="../assets/insumo.png" alt="">
-        <h4>Diferença entre os melhores insumos</h4>
-    </div>
-    <span>17 cm</span>
-    <p>142 cm com Insumo A vs. 125 cm com Insumo B</p>
-</div>
-
-<div class="container-kpi">
-    <div class="row-kpi">
-        <img src="../assets/crescimento.png" alt="">
-        <h4>Crescimento médio dos melhores insumos</h4>
-    </div>
-    <span>+21,3 cm</span>
-    <p>Média dos insumos A, B e C</p>
-</div>
+                    <div class="container-kpi">
+                        <div class="row-kpi">
+                            <img src="../assets/insumo.png" alt="">
+                            <h4>Diferença entre os melhores insumos</h4>
+                        </div>
+                        <span>17 cm</span>
+                        <p>142 cm com Insumo A vs. 125 cm com Insumo B</p>
+                    </div>
+                    <div class="container-kpi">
+                        <div class="row-kpi">
+                            <img src="../assets/crescimento.png" alt="">
+                            <h4>Crescimento médio dos melhores insumos</h4>
+                        </div>
+                        <span>+21,3 cm</span>
+                        <p>Média dos insumos A, B e C</p>
+                    </div>
+                </div> <!-- Fecha a grade das KPIs antes dos gráficos. -->
 
                 <div class="abas-graficos" role="tablist" aria-label="Selecionar gráfico">
-                        <button type="button" class="aba-grafico" role="tab" aria-selected="true" data-abrir="evolucao"
-                            onclick="mostrarGrafico(this)">Evolução</button>
-                        <button type="button" class="aba-grafico" role="tab" aria-selected="false"
+                    <button type="button" class="aba-grafico" role="tab" aria-selected="true"
+                            data-abrir="evolucao" onclick="mostrarGrafico(this)">Evolução</button>
+                    <button type="button" class="aba-grafico" role="tab" aria-selected="false"
                             data-abrir="comparacao" onclick="mostrarGrafico(this)">Comparação</button>
-                    </div>
+                </div>
 
-                    <div class="posicao-container-grafico">
-                        <div class="container-grafico painel-ativo" data-grafico="evolucao">
-                            <h3>Como a altura da cana evoluiu ao longo dos meses</h3>
-                            <p class="subtitulo-grafico">Altura média de janeiro a junho (cm) · dados simulados</p>
-                            <div class="area-grafico"><canvas id="grafico-produtividade"
-                                    aria-label="Evolução mensal da altura por tratamento"></canvas></div>
-                            <p class="conclusao-grafico">O Insumo A encerrou junho com a maior altura: 142 cm.</p>
+                <div class="posicao-container-grafico">
+                    <div class="container-grafico painel-ativo" data-grafico="evolucao">
+                        <h3>Como a altura da cana evoluiu ao longo dos meses?</h3>
+                        <p class="subtitulo-grafico">Altura média de janeiro a junho (cm) · dados simulados</p>
+                        <div class="area-grafico">
+                            <svg viewBox="0 0 640 290" role="img" aria-label="Gráfico de linhas: crescimento mensal de janeiro a junho do controle e dos insumos A, B e C">
+<g font-family="Arial, sans-serif" font-size="12" fill="#365547">
+<line x1="57" y1="23" x2="75" y2="23" stroke="#284b38" stroke-width="4" stroke-linecap="round"/>
+<text x="81" y="27">Controle</text>
+<line x1="197" y1="23" x2="215" y2="23" stroke="#08b875" stroke-width="4" stroke-linecap="round"/>
+<text x="221" y="27">Insumo A</text>
+<line x1="337" y1="23" x2="355" y2="23" stroke="#56a987" stroke-width="4" stroke-linecap="round"/>
+<text x="361" y="27">Insumo B</text>
+<line x1="477" y1="23" x2="495" y2="23" stroke="#92cdb0" stroke-width="4" stroke-linecap="round"/>
+<text x="501" y="27">Insumo C</text>
+<line x1="65" y1="240" x2="607" y2="240" stroke="#d7e5dc" stroke-width="1"/>
+<text x="52" y="244" text-anchor="end">0</text>
+<line x1="65" y1="195" x2="607" y2="195" stroke="#d7e5dc" stroke-width="1"/>
+<text x="52" y="199" text-anchor="end">40</text>
+<line x1="65" y1="150" x2="607" y2="150" stroke="#d7e5dc" stroke-width="1"/>
+<text x="52" y="154" text-anchor="end">80</text>
+<line x1="65" y1="105" x2="607" y2="105" stroke="#d7e5dc" stroke-width="1"/>
+<text x="52" y="109" text-anchor="end">120</text>
+<line x1="65" y1="60" x2="607" y2="60" stroke="#d7e5dc" stroke-width="1"/>
+<text x="52" y="64" text-anchor="end">160</text>
+<text x="76" y="261" text-anchor="middle">Jan</text>
+<text x="180" y="261" text-anchor="middle">Fev</text>
+<text x="284" y="261" text-anchor="middle">Mar</text>
+<text x="388" y="261" text-anchor="middle">Abr</text>
+<text x="492" y="261" text-anchor="middle">Mai</text>
+<text x="596" y="261" text-anchor="middle">Jun</text>
+<polyline points="76,226.5 180,206.2 284,182.6 388,154.5 492,128.6 596,112.2" fill="none" stroke="#284b38" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="76" cy="226.5" r="3.5" fill="#284b38"/>
+<circle cx="180" cy="206.2" r="3.5" fill="#284b38"/>
+<circle cx="284" cy="182.6" r="3.5" fill="#284b38"/>
+<circle cx="388" cy="154.5" r="3.5" fill="#284b38"/>
+<circle cx="492" cy="128.6" r="3.5" fill="#284b38"/>
+<circle cx="596" cy="112.2" r="3.5" fill="#284b38"/>
+<polyline points="76,226.5 180,200.6 284,170.2 388,136.5 492,106.1 596,80.2" fill="none" stroke="#08b875" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="76" cy="226.5" r="3.5" fill="#08b875"/>
+<circle cx="180" cy="200.6" r="3.5" fill="#08b875"/>
+<circle cx="284" cy="170.2" r="3.5" fill="#08b875"/>
+<circle cx="388" cy="136.5" r="3.5" fill="#08b875"/>
+<circle cx="492" cy="106.1" r="3.5" fill="#08b875"/>
+<circle cx="596" cy="80.2" r="3.5" fill="#08b875"/>
+<polyline points="76,226.5 180,204.0 284,177.0 388,147.8 492,121.9 596,99.4" fill="none" stroke="#56a987" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="76" cy="226.5" r="3.5" fill="#56a987"/>
+<circle cx="180" cy="204.0" r="3.5" fill="#56a987"/>
+<circle cx="284" cy="177.0" r="3.5" fill="#56a987"/>
+<circle cx="388" cy="147.8" r="3.5" fill="#56a987"/>
+<circle cx="492" cy="121.9" r="3.5" fill="#56a987"/>
+<circle cx="596" cy="99.4" r="3.5" fill="#56a987"/>
+<polyline points="76,226.5 180,202.9 284,173.6 388,143.2 492,117.4 596,93.8" fill="none" stroke="#92cdb0" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="76" cy="226.5" r="3.5" fill="#92cdb0"/>
+<circle cx="180" cy="202.9" r="3.5" fill="#92cdb0"/>
+<circle cx="284" cy="173.6" r="3.5" fill="#92cdb0"/>
+<circle cx="388" cy="143.2" r="3.5" fill="#92cdb0"/>
+<circle cx="492" cy="117.4" r="3.5" fill="#92cdb0"/>
+<circle cx="596" cy="93.8" r="3.5" fill="#92cdb0"/>
+<text x="336" y="284" text-anchor="middle" font-size="11">Altura média em centímetros (dados simulados)</text>
+</g></svg>
                         </div>
-
-                        <div class="container-grafico" data-grafico="comparacao">
-                            <h3>Qual tratamento apresentou maior altura final</h3>
-                            <p class="subtitulo-grafico">Altura média em junho (cm) · dados simulados</p>
-                            <div class="area-grafico"><canvas id="grafico-colmo"
-                                    aria-label="Altura final em centímetros por tratamento"></canvas></div>
-                            <p class="conclusao-grafico">Insumo A: 28,4 cm a mais que o controle (+25%).</p>
-                        </div>
+                        <p class="conclusao-grafico">O Insumo A encerrou junho com a maior altura: 142 cm.</p>
                     </div>
-
+                    <div class="container-grafico" data-grafico="comparacao">
+                        <h3>Qual tratamento apresentou maior altura final?</h3>
+                        <p class="subtitulo-grafico">Altura média em junho (cm) · dados simulados</p>
+                        <div class="area-grafico">
+                            <svg viewBox="0 0 640 290" role="img" aria-label="Gráfico de barras: altura final em junho; Controle 113,6 cm, Insumo A 142 cm, Insumo B 125 cm e Insumo C 130 cm">
+<g font-family="Arial, sans-serif" font-size="13" fill="#365547">
+<line x1="65" y1="240" x2="607" y2="240" stroke="#d7e5dc" stroke-width="1"/>
+<text x="52" y="244" text-anchor="end">0</text>
+<line x1="65" y1="195" x2="607" y2="195" stroke="#d7e5dc" stroke-width="1"/>
+<text x="52" y="199" text-anchor="end">40</text>
+<line x1="65" y1="150" x2="607" y2="150" stroke="#d7e5dc" stroke-width="1"/>
+<text x="52" y="154" text-anchor="end">80</text>
+<line x1="65" y1="105" x2="607" y2="105" stroke="#d7e5dc" stroke-width="1"/>
+<text x="52" y="109" text-anchor="end">120</text>
+<line x1="65" y1="60" x2="607" y2="60" stroke="#d7e5dc" stroke-width="1"/>
+<text x="52" y="64" text-anchor="end">160</text>
+<rect x="94" y="112.2" width="65" height="127.8" rx="5" fill="#284b38"/>
+<text x="126.5" y="103.2" text-anchor="middle" font-weight="bold">113,6</text>
+<text x="126.5" y="262" text-anchor="middle" font-size="12">Controle</text>
+<rect x="226" y="80.2" width="65" height="159.8" rx="5" fill="#08b875"/>
+<text x="258.5" y="71.2" text-anchor="middle" font-weight="bold">142</text>
+<text x="258.5" y="262" text-anchor="middle" font-size="12">Insumo A</text>
+<rect x="358" y="99.4" width="65" height="140.6" rx="5" fill="#56a987"/>
+<text x="390.5" y="90.4" text-anchor="middle" font-weight="bold">125</text>
+<text x="390.5" y="262" text-anchor="middle" font-size="12">Insumo B</text>
+<rect x="490" y="93.8" width="65" height="146.2" rx="5" fill="#92cdb0"/>
+<text x="522.5" y="84.8" text-anchor="middle" font-weight="bold">130</text>
+<text x="522.5" y="262" text-anchor="middle" font-size="12">Insumo C</text>
+<text x="336" y="284" text-anchor="middle" font-size="11">Altura média em centímetros (dados simulados)</text>
+</g></svg>
+                        </div>
+                        <p class="conclusao-grafico">Insumo A: 28,4 cm a mais que o controle (+25%).</p>
+                    </div>
+                </div>
             </main>
         </div>
     </div>
 
     <script>
+        // Em telas pequenas, mostra somente o gráfico selecionado.
+        function mostrarGrafico(botao) {
+            let botoes = document.querySelectorAll('.aba-grafico');
+            let graficos = document.querySelectorAll('[data-grafico]');
+            let selecionado = botao.getAttribute('data-abrir');
 
-        const ctx = document.getElementById('grafico-colmo');
-
-        const labels = ['Controle', 'Insumo A', 'Insumo B', 'Insumo C'];
-        const data = {
-            labels: labels,
-            datasets: [{
-                label: 'Altura média em junho',
-                data: [113.6, 142, 125, 130],
-                backgroundColor: ['#084925', '#07F9A2', '#56B788', '#9DDCBF'],
-                borderWidth: 0
-            }]
-        };
-
-        const config = {
-            type: 'bar',
-            data: data,
-            options: {
-                maintainAspectRatio: false,
-                plugins: {tooltip: {callbacks: {label: function (item) {return item.dataset.label + ': ' + item.parsed.y + ' cm';}}}},
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {display: true, text: 'Altura (cm)'}
-                    }
-                }
+            for (let i = 0; i < botoes.length; i++) {
+                botoes[i].setAttribute('aria-selected', botoes[i] == botao);
             }
-        };
-
-        new Chart(ctx, config);
-
-        const ctx2 = document.getElementById('grafico-produtividade');
-
-        const labels2 = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'];
-        const data2 = {
-            labels: labels2,
-            datasets: [
-                {
-                    label: 'Sem insumo (controle)',
-                    data: [12, 30, 51, 76, 99, 113.6],
-                    fill: false,
-                    borderColor: '#084925',
-                    tension: 0.1
-                },
-                {
-                    label: 'Insumo A',
-                    data: [12, 35, 62, 92, 119, 142],
-                    fill: false,
-                    borderColor: '#07B875',
-                    tension: 0.1
-                },
-                {
-                    label: 'Insumo B',
-                    data: [12, 32, 56, 82, 105, 125],
-                    fill: false,
-                    borderColor: '#56B788',
-                    tension: 0.1
-                },
-                {
-                    label: 'Insumo C',
-                    data: [12, 33, 59, 86, 109, 130],
-                    fill: false,
-                    borderColor: '#9DDCBF',
-                    tension: 0.1
-                }
-            ]
-        };
-
-        const config2 = {
-            type: 'line',
-            data: data2,
-            options: {
-                maintainAspectRatio: false,
-                plugins: {tooltip: {callbacks: {label: function (item) {return item.dataset.label + ': ' + item.parsed.y + ' cm';}}}},
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {display: true, text: 'Altura (cm)'}
-                    }
-                }
-            }
-        };
-
-        new Chart(ctx2, config2);
-
-        // KPIs calculadas com os mesmos dados dos graficos.
-        let alturasFinais = [142, 125, 130];
-        let nomesInsumos = ['Insumo A', 'Insumo B', 'Insumo C'];
-        let maior = 0;
-        let menor = 0;
-        for (let i = 1; i < alturasFinais.length; i++) {
-            if (alturasFinais[i] > alturasFinais[maior]) maior = i;
-            if (alturasFinais[i] < alturasFinais[menor]) menor = i;
-        }
-        document.getElementById('kpi-diferenca').textContent =
-            (alturasFinais[maior] - alturasFinais[menor]).toLocaleString('pt-BR') + ' cm';
-        document.getElementById('kpi-diferenca-descricao').textContent =
-            nomesInsumos[maior] + ' vs. ' + nomesInsumos[menor] + ' em junho';
-
-        let maiorGanho = 0;
-        let mesPico = 1;
-        let insumoPico = '';
-        for (let i = 0; i < data2.datasets.length; i++) {
-            let serie = data2.datasets[i];
-            for (let j = 1; j < serie.data.length; j++) {
-                let ganho = serie.data[j] - serie.data[j - 1];
-                if (ganho > maiorGanho) {
-                    maiorGanho = ganho;
-                    mesPico = j;
-                    insumoPico = serie.label;
+            for (let i = 0; i < graficos.length; i++) {
+                if (graficos[i].getAttribute('data-grafico') == selecionado) {
+                    graficos[i].classList.add('painel-ativo');
+                } else {
+                    graficos[i].classList.remove('painel-ativo');
                 }
             }
         }
-        document.getElementById('kpi-pico').textContent = '+' + maiorGanho.toLocaleString('pt-BR') + ' cm';
-        document.getElementById('kpi-pico-descricao').textContent =
-            insumoPico + ', de ' + labels2[mesPico - 1] + ' a ' + labels2[mesPico];
     </script>
-    <script src="./dash-telas.js"></script>
 </body>
-
 </html>

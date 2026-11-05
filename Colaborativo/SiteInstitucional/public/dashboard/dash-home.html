@@ -7,35 +7,36 @@
     <link rel="stylesheet" href="../css/dash-base.css">
     <link rel="stylesheet" href="../css/dash-home.css">
     <title>Insu+ | Visão geral</title>
-    <link rel="shortcut icon" href="./assets/logo-insu-escuro.svg" type="image/x-icon">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="shortcut icon" href="../assets/logo-insu-escuro.png" type="image/png">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script src="./dash-graficos-fallback.js"></script>
 </head>
 
 <body>
     <div class="posicao-side-bar-e-header">
 
         <aside class="side-bar">
-            <img src="./assets/logo-insu-claro.svg" alt="Insu+ LOGO">
+            <img src="../assets/logo-insu-claro.png" alt="Insu+ LOGO">
 
             <div class="posicao-side-bar">
 
                 <div class="row-side-bar selecionado">
-                    <img src="./assets/icone-home.svg" alt="">
+                    <img src="../assets/icone-home.png" alt="">
                     <a href="">VISÃO GERAL</a>
                 </div>
 
                 <div class="row-side-bar">
-                    <img src="./assets/icone-cana-de-acucar.svg" alt="">
+                    <img src="../assets/icone-cana-de-acucar.png" alt="">
                     <a href="dash-insumos.html">INSUMOS</a>
                 </div>
 
                 <!-- <div class="row-side-bar">
-                    <img src="./assets/icone-configuracao.svg" alt="">
+                    <img src="../assets/icone-configuracao.png" alt="">
                     <a href="">CONFIGURAÇÃO</a>
                 </div> -->
 
                 <div class="row-side-bar">
-                    <img src="./assets/icone-sair.svg" alt="">
+                    <img src="../assets/icone-sair.png" alt="">
                     <a href="./../../index.html">SAIR</a>
                 </div>
 
@@ -52,7 +53,7 @@
                 </div>
 
                 <div class="user-header">
-                    <img src="./assets/user-conta.svg" alt="User conta">
+                    <img src="../assets/user-conta.png" alt="User conta">
                     <div class="nome-user-header">
                         <h3>User</h3>
                         <p>Fazenda Boa Vista</p>
@@ -70,7 +71,7 @@
 
                     <div class="container-kpi">
                         <div class="row-kpi">
-                            <img src="./assets/crescimento.svg" alt="">
+                            <img src="../assets/crescimento.png" alt="">
                             <h4>Tratamento com maior altura</h4>
                         </div>
                         <span>Insumo A</span>
@@ -79,7 +80,7 @@
 
                     <div class="container-kpi">
                         <div class="row-kpi">
-                            <img src="./assets/insumo.svg" alt="">
+                            <img src="../assets/insumo.png" alt="">
                             <h4>Ganho de altura sobre o controle</h4>
                         </div>
                         <span>+28,4 cm</span>
@@ -88,7 +89,7 @@
 
                     <div class="container-kpi">
                         <div class="row-kpi">
-                            <img src="./assets/insumo.svg" alt="">
+                            <img src="../assets/insumo.png" alt="">
                             <h4>Diferença entre os insumos</h4>
                         </div>
 
@@ -98,19 +99,20 @@
 
                     <div class="container-kpi">
                         <div class="row-kpi">
-                            <img src="./assets/crescimento.svg" alt="">
+                            <img src="../assets/crescimento.png" alt="">
                             <h4>Pico de crescimento</h4>
                         </div>
 
                         <span id="kpi-pico">—</span>
                         <p id="kpi-pico-descricao"></p>
                     </div>
+                </div>
 
-                    <div class="abas-graficos" role="tablist" aria-label="Selecionar gráfico">
+                <div class="abas-graficos" role="tablist" aria-label="Selecionar gráfico">
                         <button type="button" class="aba-grafico" role="tab" aria-selected="true" data-abrir="evolucao"
-                            onclick="mostrarGrafico(this)">Evolucao</button>
+                            onclick="mostrarGrafico(this)">Evolução</button>
                         <button type="button" class="aba-grafico" role="tab" aria-selected="false"
-                            data-abrir="comparacao" onclick="mostrarGrafico(this)">Comparacao</button>
+                            data-abrir="comparacao" onclick="mostrarGrafico(this)">Comparação</button>
                     </div>
 
                     <div class="posicao-container-grafico">
@@ -220,6 +222,38 @@
         };
 
         new Chart(ctx2, config2);
+
+        // KPIs calculadas com os mesmos dados dos graficos.
+        let alturasFinais = [142, 125, 130];
+        let nomesInsumos = ['Insumo A', 'Insumo B', 'Insumo C'];
+        let maior = 0;
+        let menor = 0;
+        for (let i = 1; i < alturasFinais.length; i++) {
+            if (alturasFinais[i] > alturasFinais[maior]) maior = i;
+            if (alturasFinais[i] < alturasFinais[menor]) menor = i;
+        }
+        document.getElementById('kpi-diferenca').textContent =
+            (alturasFinais[maior] - alturasFinais[menor]).toLocaleString('pt-BR') + ' cm';
+        document.getElementById('kpi-diferenca-descricao').textContent =
+            nomesInsumos[maior] + ' vs. ' + nomesInsumos[menor] + ' em junho';
+
+        let maiorGanho = 0;
+        let mesPico = 1;
+        let insumoPico = '';
+        for (let i = 0; i < data2.datasets.length; i++) {
+            let serie = data2.datasets[i];
+            for (let j = 1; j < serie.data.length; j++) {
+                let ganho = serie.data[j] - serie.data[j - 1];
+                if (ganho > maiorGanho) {
+                    maiorGanho = ganho;
+                    mesPico = j;
+                    insumoPico = serie.label;
+                }
+            }
+        }
+        document.getElementById('kpi-pico').textContent = '+' + maiorGanho.toLocaleString('pt-BR') + ' cm';
+        document.getElementById('kpi-pico-descricao').textContent =
+            insumoPico + ', de ' + labels2[mesPico - 1] + ' a ' + labels2[mesPico];
     </script>
     <script src="./dash-telas.js"></script>
 </body>

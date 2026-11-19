@@ -38,7 +38,8 @@
             <label for="ipt_senha_confirmacao">Confirmar Senha</label>
             <div class="campo-senha">
                 <input type="password" id="ipt_senha_confirmacao" class="input" placeholder="Confirmar Senha">
-                <button type="button" class="botao-olho" onclick="alternarSenha('ipt_senha_confirmacao', this)">Mostrar</button>
+                <button type="button" class="botao-olho"
+                    onclick="alternarSenha('ipt_senha_confirmacao', this)">Mostrar</button>
             </div>
             <br>
 
@@ -51,6 +52,11 @@
     </div>
 
     <script>
+        // elementos globais (mantém as variáveis ipt_... usadas originalmente)
+        var ipt_nome = document.getElementById('ipt_nome');
+        var ipt_email = document.getElementById('ipt_email');
+        var ipt_senha = document.getElementById('ipt_senha');
+        var ipt_senha_confirmacao = document.getElementById('ipt_senha_confirmacao');
         // Mostra ou oculta a senha do campo informado
         function alternarSenha(idCampo, botao) {
             let campo = document.getElementById(idCampo);
@@ -155,24 +161,48 @@
             }
 
             let usuarios = lerUsuarios();
-
-            // Impede dois cadastros com o mesmo e-mail
             let jaExiste = usuarios.some(function (usuario) {
                 return usuario.email == email;
             });
-
             if (jaExiste) {
                 alert("Este e-mail já está cadastrado.");
                 return;
             }
 
-            // Salva o novo usuário na lista e grava de volta no localStorage
-            usuarios.push({ nome: nome, email: email, senha: senha });
-            localStorage.setItem('usuarios', JSON.stringify(usuarios));
+            // Envia para o servidor primeiro; em caso de sucesso, salva localmente e redireciona
+            fetch("/usuarios/cadastrar", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    nomeServer: nome,
+                    emailServer: email,
+                    senhaServer: senha
+                }),
+            })
+                .then(function (resposta) {
+                    console.log("resposta: ", resposta);
 
-            alert("Conta criada com sucesso! Faça login para continuar.");
-            window.location.href = "login.html";
+                    if (resposta.ok) {
+                        // salva localmente e redireciona para o login
+                        usuarios.push({ nome: nome, email: email, senha: senha });
+                        localStorage.setItem('usuarios', JSON.stringify(usuarios));
+                        alert("Conta criada com sucesso! Faça login para continuar.");
+                        setTimeout(() => {
+                            window.location = "login.html";
+                        }, 1000);
+
+                    } else {
+                        throw "Houve um erro ao tentar realizar o cadastro!";
+                    }
+                })
+                .catch(function (resposta) {
+                    console.log(`#ERRO: ${resposta}`);
+                    alert("Erro ao cadastrar. Tente novamente mais tarde.");
+                });
         }
+    
     </script>
 </body>
 

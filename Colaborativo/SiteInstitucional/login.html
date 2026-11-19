@@ -61,6 +61,7 @@
         }
 
         function entrar() {
+            let usuarioEncontrado = []
             let email = ipt_email.value.trim().toLowerCase();
             let senha = ipt_senha.value;
 
@@ -71,22 +72,60 @@
 
             let usuarios = lerUsuarios();
 
-            // Procura um usuário com esse e-mail e essa senha
-            let usuarioEncontrado = usuarios.find(function (usuario) {
-                return usuario.email == email && usuario.senha == senha;
-            });
+            var emailVar = email;
+            var senhaVar = senha;
 
-            if (usuarioEncontrado) {
-                // Guarda quem está logado (útil para mostrar o nome no dashboard)
-                localStorage.setItem('usuarioLogado', JSON.stringify({
-                    nome: usuarioEncontrado.nome,
-                    email: usuarioEncontrado.email
-                }));
 
-                window.location.href = "./public/dashboard/dash-home.html"; // redireciona para o dashboard
-            } else {
-                alert("Email ou Senha incorreto");
-            }
+            console.log("FORM LOGIN: ", emailVar);
+            console.log("FORM SENHA: ", senhaVar);
+
+            fetch("/usuarios/autenticar", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    emailServer: emailVar,
+                    senhaServer: senhaVar
+                })
+            }).then(function (resposta) {
+                console.log("ESTOU NO THEN DO entrar()!")
+
+                if (resposta.ok) {
+                    console.log(resposta);
+
+                    resposta.json().then(json => {
+                        console.log(json);
+                        localStorage.setItem('usuarioLogado', JSON.stringify({
+                        nome: usuarioEncontrado.nome,
+                        email: usuarioEncontrado.email}))
+
+                        setTimeout(function () {
+                            // dashboard está dentro da pasta "public", então usar caminho relativo
+                            window.location.href = "./public/dashboard/dash-home.html";
+                        }, 1000)
+                        ;
+
+                    });
+
+                } else {
+
+                    console.log("Houve um erro ao tentar realizar o login!");
+
+                    resposta.text().then(texto => {
+                        console.error(texto);
+                    });
+                }
+
+            }).catch(function (erro) {
+                console.log(erro);
+            })
+
+            return false;
+        }
+
+        function sumirMensagem() {
+            cardErro.style.display = "none"
         }
     </script>
 </body>

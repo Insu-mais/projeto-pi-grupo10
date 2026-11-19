@@ -76,7 +76,7 @@ body {
 
 .inicio {
     height: 100vh;
-    background-image: url(public/assets/fundo_canavial_escurecido.png);
+    background-image: url('../assets/fundo_canavial_escurecido.png');
     background-size: cover;
     /*Faz a imagem cobrir toda a tela*/
 }

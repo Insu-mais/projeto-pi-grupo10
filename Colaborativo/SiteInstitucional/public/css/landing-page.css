@@ -70,6 +70,7 @@ body {
 
 .button-header:hover {
     background-color: #A1E53B;
+    transition: 0.3s;
 }
 
 /*INICIO ---------------------------------------------------------------------*/
@@ -450,6 +451,7 @@ body {
 
 .button-green:hover {
     background-color: #A1E53B;
+    transition: 0.3s;
 }
 
 .button-white {
@@ -472,6 +474,7 @@ body {
 
 .button-white:hover {
     background-color: #A1E53B;
+    transition: 0.3s;
 }
 
 p {

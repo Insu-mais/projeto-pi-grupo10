@@ -12,6 +12,11 @@ body {
     margin: 0;
     padding: 0;
     font-family: "Inter", sans-serif;
+    width: 100%;
+}
+
+* {
+    box-sizing: border-box;
 }
 
 /*HEADER ---------------------------------------------------------------------*/
@@ -19,20 +24,16 @@ body {
 .header {
     display: flex;
     flex-direction: row;
-    justify-content: center;
-    align-items: flex-end;
-    gap: 30px;
+    justify-content: space-between;
+    align-items: center;
+    gap: 25px;
     width: 100%;
-    padding: 15px 60px 15px 60px;
+    padding: 15px 4%;
     color: white;
     background-color: rgba(11, 29, 21, 0.4);
     backdrop-filter: blur(10px);
-    /*Cria um efeito de vidro fosco*/
     box-sizing: border-box;
-    /*Faz com que o paddig não aumente o tamanho do header, crie um espaçamento dentro do tamanho delimitado*/
     position: fixed;
-    /*Mantem o header fixo na tela, mesmo que o usuário dê o scroll*/
-
 }
 
 .header p {
@@ -50,10 +51,11 @@ body {
 }
 
 .header img {
-    height: 50px;
-    width: 80px;
+    height: auto;
+    width: 100px;
+    max-width: 15%;
     margin-right: auto;
-    padding-left: 60px;
+    padding-left: 0;
     /*Essa propriedade ocupa automaticamente o espaço horizontal disponível à direita da logo, afastando os links.*/
 }
 
@@ -63,7 +65,7 @@ body {
     background-color: #07F9A2;
     border: none;
     border-radius: 35px;
-    font-weight: bolder;
+    font-weight: bold;
     cursor: pointer;
     color: black;
 }
@@ -76,7 +78,8 @@ body {
 /*INICIO ---------------------------------------------------------------------*/
 
 .inicio {
-    height: 100vh;
+    min-height: 100vh;
+    width: 100%;
     background-image: url('../assets/fundo_canavial_escurecido.png');
     background-size: cover;
     /*Faz a imagem cobrir toda a tela*/
@@ -87,26 +90,29 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    padding-left: 60px;
-    padding-top: 100px;
+    padding: 120px 60px 60px 60px;
 }
 
 /*DESAFIO ---------------------------------------------------------------------*/
 
 .desafio {
-    height: 80vh;
+    min-height: 80vh;
+    width: 100%;
     background-color: #eef6f1;
     display: flex;
+    flex-direction: row;
     justify-content: space-between;
     align-items: center;
     gap: 40px;
+    padding: 50px 4%;
 }
 
 .posicao-desafio-principal {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding-left: 60px;
+    width: 45%;
+    padding-left: 0;
 }
 
 .posicao-desafio-detalhes {
@@ -114,31 +120,32 @@ body {
     flex-direction: column;
     justify-content: center;
     border-left: 2px solid #07F9A2;
-    padding-right: 80px;
-    padding-left: 130px;
+    padding-right: 0;
+    padding-left: 5%;
+    width: 55%;
 }
 
 /*SOLUÇÃO ---------------------------------------------------------------------*/
 
 .solucao {
-    height: 100vh;
+    min-height: 100vh;
+    width: 100%;
     background-color: white;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding-left: 60px;
-    padding-right: 60px;
+    padding: 60px 4%;
 }
 
 
 .container-solucao {
-    height: 230px;
-    width: 450px;
+    height: auto;
+    min-height: 230px;
+    width: 32%;
     background-color: #eef6f1;
     border: none;
     border-radius: 25px;
-    padding-left: 20px;
-    padding-top: 15px;
+    padding: 15px 20px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
@@ -164,7 +171,8 @@ body {
 /*CALCULADORA ---------------------------------------------------------------------*/
 
 .calculadora {
-    height: 100vh;
+    min-height: 100vh;
+    width: 100%;
     background-color: #eef6f1;
     display: flex;
     align-items: center;
@@ -305,7 +313,8 @@ body {
 /*VALORES ---------------------------------------------------------------------*/
 
 .valores {
-    height: 100vh;
+    min-height: 100vh;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -363,13 +372,14 @@ body {
 /*ÂNCORA ---------------------------------------------------------------------*/
 
 .ancora {
-    height: 40vh;
+    min-height: 40vh;
+    width: 100%;
     background-color: #07F9A2;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 60px;
+    padding: 60px 4%;
     box-sizing: border-box;
 }
 
@@ -386,27 +396,30 @@ body {
 /*FOOTER ---------------------------------------------------------------------*/
 
 .footer {
+    min-height: 40vh;
+    width: 100%;
     display: flex;
     flex-direction: row;
-    justify-content: flex-start;
-    height: 40vh;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
     background-color: #0b1d15;
-    padding-left: 60px;
-    padding-right: 90px;
+    padding: 60px 4%;
 }
 
 .footer img {
     height: 80px;
     width: 140px;
+    max-width: 100%;
 }
 
 .posicao-footer {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding-left: 150px;
+    padding-left: 5%;
     gap: 15px;
-    padding-top: 70px;
+    padding-top: 30px;
 }
 
 .posicao-footer p {
@@ -499,7 +512,7 @@ p {
     font-weight: bolder;
 }
 
-.p-white{
+.p-white {
     color: white;
 }
 
@@ -520,6 +533,6 @@ img {
     width: 80px;
 }
 
-span{
+span {
     font-size: 20px;
 }
